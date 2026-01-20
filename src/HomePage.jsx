@@ -1,422 +1,651 @@
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { Mic2, ChevronDown, Radio, Users, Zap } from 'lucide-react';
-import AboutUs from './AboutUs';
-import { useState, useEffect } from 'react';
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import {
+  ChevronDown,
+  MapPin,
+  Mail,
+  Users,
+  Instagram,
+  Linkedin,
+  Facebook, // Imported Facebook
+  Phone,
+} from "lucide-react";
+import { useState, useEffect } from "react";
+
+// --- COMPONENTS ---
+import AboutUs from "./AboutUs";
+import EventStickyScroll from "./components/EventStickyScroll";
+import DraggableGallery from "./components/DraggableGallery";
+
+// --- THEME & STYLES ---
+const theme = {
+  colors: {
+    primary: "#ec4899", // Pink
+    secondary: "#a855f7", // Purple
+    background: "linear-gradient(180deg, #0a0a0a, #1a1a2e)",
+    text: "#ffffff",
+  },
+  transitions: "all 0.3s ease",
+};
 
 const styles = {
-  container: {
-    maxWidth: '896px',
-    margin: '0 auto',
-    padding: '0 24px',
+  nav: {
+    padding: "1rem 5%",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderBottom: "1px solid rgba(236,72,153,0.2)",
+    backdropFilter: "blur(10px)",
+    position: "sticky",
+    top: 0,
+    zIndex: 100,
   },
   button: {
-    padding: '12px 32px',
-    borderRadius: '8px',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '16px',
-    fontWeight: '600',
-    transition: 'all 0.3s ease',
-  },
-  buttonPrimary: {
-    background: 'linear-gradient(135deg, #00f3ff, #a855f7)',
-    color: '#fff',
+    padding: "10px 24px",
+    borderRadius: "8px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "600",
+    transition: theme.transitions,
   },
   buttonSecondary: {
-    background: 'transparent',
-    border: '2px solid #00f3ff',
-    color: '#00f3ff',
+    background: "transparent",
+    border: "2px solid #38bdf8", // Blue border
+    color: "#38bdf8", // Blue text
   },
-};
-
-// SVG Drawing animation configuration
-const draw = {
-  hidden: { pathLength: 0, opacity: 0 },
-  visible: (i) => ({
-    pathLength: 1,
-    opacity: 1,
-    transition: {
-      pathLength: { delay: i * 0.15, type: "spring", duration: 1.5, bounce: 0 },
-      opacity: { delay: i * 0.15, duration: 0.01 },
-    },
-  }),
-};
-
-const pathStyle = {
-  fill: "transparent",
-  stroke: "url(#smoothGradient)",
-  strokeWidth: 22,
-  strokeLinecap: "square",
-  strokeLinejoin: "miter",
+  contactCard: {
+    background: "rgba(255, 255, 255, 0.03)",
+    border: "1px solid rgba(0, 243, 255, 0.1)",
+    borderRadius: "12px",
+    padding: "24px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "16px",
+    transition: "all 0.3s ease",
+  },
 };
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 768);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
-    const handleResize = () => setIsSmallScreen(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const isMobile = windowWidth < 768;
+
   return (
-    <div style={{ background: 'linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%)', color: '#fff', minHeight: '100vh', overflow: 'hidden', position: 'relative' }}>
-      {/* Content Wrapper */}
-      <div style={{ position: 'relative', zIndex: 1 }}>
-      {/* Navigation */}
-      <nav style={{ padding: isSmallScreen ? '16px' : '24px', borderBottom: '1px solid rgba(0, 243, 255, 0.1)' }}>
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '1200px', margin: '0 auto', flexWrap: 'wrap', gap: '16px' }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Radio style={{ color: '#00f3ff', width: isSmallScreen ? '24px' : '28px', height: isSmallScreen ? '24px' : '28px' }} />
-            <span style={{ fontSize: isSmallScreen ? '20px' : '24px', fontWeight: '700', background: 'linear-gradient(90deg, #00f3ff, #a855f7)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              NITroz
-            </span>
-          </div>
-          <button
-            onClick={() => navigate('/register')}
+    <div
+      style={{
+        background: theme.colors.background,
+        minHeight: "100vh",
+        color: theme.colors.text,
+        overflowX: "hidden",
+        fontFamily: "Inter, system-ui, sans-serif",
+      }}
+    >
+      {/* --- NAVBAR --- */}
+      <nav style={styles.nav}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span
             style={{
-              ...styles.button,
-              ...styles.buttonSecondary,
-              padding: isSmallScreen ? '10px 20px' : '12px 32px',
-              fontSize: isSmallScreen ? '14px' : '16px',
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.boxShadow = '0 0 20px rgba(0, 243, 255, 0.5)';
-              e.target.style.background = 'rgba(0, 243, 255, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.boxShadow = 'none';
-              e.target.style.background = 'transparent';
+              fontSize: isMobile ? "18px" : "22px",
+              fontWeight: 800,
+              background: `linear-gradient(90deg, ${theme.colors.primary}, ${theme.colors.secondary})`,
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
             }}
           >
-            {isSmallScreen ? 'Register' : 'Register Now'}
-          </button>
-        </motion.div>
+            RadioNitroz
+          </span>
+        </div>
+
+        <button
+          onClick={() => navigate("/register")}
+          style={{ ...styles.button, ...styles.buttonSecondary }}
+          onMouseEnter={(e) => {
+            e.target.style.background =
+              "linear-gradient(135deg, #38bdf8, #2563eb)";
+            e.target.style.color = "#000";
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.background = "transparent";
+            e.target.style.color = "#38bdf8";
+          }}
+        >
+          Register
+        </button>
       </nav>
 
-      {/* Hero Section */}
-      <section style={{ position: 'relative', paddingTop: isSmallScreen ? '60px' : '120px', paddingBottom: isSmallScreen ? '60px' : '120px', paddingLeft: '24px', paddingRight: '24px', overflow: 'hidden' }}>
-        {/* Animated background gradients */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '-50%',
-            right: '-10%',
-            width: isSmallScreen ? '300px' : '500px',
-            height: isSmallScreen ? '300px' : '500px',
-            background: 'radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%)',
-            borderRadius: '50%',
-            filter: 'blur(60px)',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '-50%',
-            left: '-10%',
-            width: isSmallScreen ? '300px' : '500px',
-            height: isSmallScreen ? '300px' : '500px',
-            background: 'radial-gradient(circle, rgba(0, 243, 255, 0.3) 0%, transparent 70%)',
-            borderRadius: '50%',
-            filter: 'blur(60px)',
-          }}
-        />
-
+      {/* --- HERO SECTION --- */}
+      <section
+        style={{
+          padding: isMobile ? "60px 16px" : "100px 24px",
+          textAlign: "center",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          minHeight: "80vh",
+          justifyContent: "center",
+        }}
+      >
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          style={{ position: 'relative', zIndex: 10, textAlign: 'center' }}
+          initial="hidden"
+          animate="visible"
+          variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
         >
-          <motion.div
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 3, repeat: Infinity }}
-            style={{ display: 'inline-block', marginBottom: '24px' }}
-          >
-            <Mic2 style={{ width: isSmallScreen ? '48px' : '64px', height: isSmallScreen ? '48px' : '64px', color: '#00f3ff' }} />
-          </motion.div>
-
-          {/* Background Video Container with AUDITION overlay */}
-          <div
+          <motion.h1
             style={{
-              position: 'relative',
-              width: '100%',
-              maxWidth: isSmallScreen ? '85vw' : '800px',
-              height: isSmallScreen ? '300px' : '400px',
-              margin: '24px auto',
-              borderRadius: '12px',
-              overflow: 'hidden',
+              fontSize: "clamp(3.5rem, 15vw, 10rem)",
+              fontWeight: "900",
+              margin: 0,
+              lineHeight: 1,
+              letterSpacing: isMobile ? "2px" : "8px",
+              whiteSpace: "nowrap",
+              background: "linear-gradient(180deg, #e0f2fe, #38bdf8, #2563eb)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+            animate={{
+              filter: [
+                "drop-shadow(0 0 12px rgba(56,189,248,0.4))",
+                "drop-shadow(0 0 28px rgba(37,99,235,0.6))",
+                "drop-shadow(0 0 12px rgba(56,189,248,0.4))",
+              ],
+            }}
+            transition={{ duration: 4, repeat: Infinity }}
+          >
+            {"AUDITIONS".split("").map((char, i) => (
+              <motion.span
+                key={i}
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0 },
+                }}
+                style={{ display: "inline-block" }}
+              >
+                {char}
+              </motion.span>
+            ))}
+          </motion.h1>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: isMobile ? "10px" : "20px",
+              marginTop: "10px",
+              width: "100%",
+              maxWidth: "900px",
             }}
           >
-            {/* Background Video */}
-            <video
-              autoPlay
-              loop
-              muted
+            <div
               style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                transform: 'translate(-50%, -50%)',
-                opacity: 0.4,
-                zIndex: 1,
+                height: "1px",
+                flex: 1,
+                background: "linear-gradient(to left, #38bdf8, transparent)",
+                display: isMobile ? "none" : "block",
               }}
-            >
-              <source src="/src/assets/dj.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-
-            {/* Animated SVG Drawing - AUDITION */}
-            <motion.svg
-              viewBox="0 0 1600 350"
+            />
+            <motion.span
               style={{
-                width: '100%',
-                height: '100%',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                zIndex: 10,
-                filter: 'drop-shadow(0 0 20px rgba(157, 78, 221, 0.6))',
+                fontSize: "clamp(1rem, 4vw, 2.5rem)",
+                fontWeight: "300",
+                letterSpacing: isMobile ? "4px" : "15px",
+                color: "#38bdf8",
+                textTransform: "uppercase",
+                whiteSpace: "nowrap",
               }}
-              initial="hidden"
-              animate="visible"
+              animate={{ opacity: [1, 0.5, 1] }}
+              transition={{ duration: 2.5, repeat: Infinity }}
             >
-            {/* Gradient Definition */}
-            <defs>
-              <linearGradient
-                id="smoothGradient"
-                x1="0%"
-                y1="0%"
-                x2="100%"
-                y2="0%"
-              >
-                <stop offset="0%" style={{ stopColor: "#B5179E", stopOpacity: 1 }} />
-                <stop offset="33%" style={{ stopColor: "#9D4EDD", stopOpacity: 1 }} />
-                <stop offset="66%" style={{ stopColor: "#C77DFF", stopOpacity: 1 }} />
-                <stop offset="100%" style={{ stopColor: "#7209B7", stopOpacity: 1 }} />
-              </linearGradient>
-              {/* Glow filter */}
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
-
-            {/* Letter A */}
-            <motion.path
-              d="M60 250 L130 50 L200 250 M90 160 H170"
-              variants={draw}
-              custom={0}
-              style={{...pathStyle, filter: 'url(#glow)'}}
-            />
-
-            {/* Letter U */}
-            <motion.path
-              d="M280 50 V180 Q280 250 355 250 Q430 250 430 180 V50"
-              variants={draw}
-              custom={1}
-              style={{...pathStyle, filter: 'url(#glow)'}}
-            />
-
-            {/* Letter D */}
-            <motion.path
-              d="M500 50 V250 H560 Q660 250 660 150 Q660 50 560 50 H500"
-              variants={draw}
-              custom={2}
-              style={{...pathStyle, filter: 'url(#glow)'}}
-            />
-
-            {/* Letter I */}
-            <motion.path
-              d="M750 50 H830 M790 50 V250 M750 250 H830"
-              variants={draw}
-              custom={3}
-              style={{...pathStyle, filter: 'url(#glow)'}}
-            />
-
-            {/* Letter T */}
-            <motion.path
-              d="M900 50 H1000 M950 50 V250"
-              variants={draw}
-              custom={4}
-              style={{...pathStyle, filter: 'url(#glow)'}}
-            />
-
-            {/* Letter I */}
-            <motion.path
-              d="M1070 50 H1150 M1110 50 V250 M1070 250 H1150"
-              variants={draw}
-              custom={5}
-              style={{...pathStyle, filter: 'url(#glow)'}}
-            />
-
-            {/* Letter O */}
-            <motion.path
-              d="M1200 50 Q1200 250 1275 250 Q1350 250 1350 150 Q1350 50 1275 50 Q1200 50 1200 150"
-              variants={draw}
-              custom={6}
-              style={{...pathStyle, filter: 'url(#glow)'}}
-            />
-
-            {/* Letter N */}
-            <motion.path
-              d="M1400 250 V50 L1520 250 V50"
-              variants={draw}
-              custom={7}
-              style={{...pathStyle, filter: 'url(#glow)'}}
-            />
-            </motion.svg>
-          </div>
-
-          <h1 style={{
-            fontSize: isSmallScreen ? '40px' : '64px',
-            fontWeight: '900',
-            marginBottom: '24px',
-            background: 'linear-gradient(135deg, #00f3ff, #ff006e, #a855f7)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            letterSpacing: '-2px',
-          }}>
-            Radio NITroz
-          </h1>
-
-          <p style={{
-            fontSize: isSmallScreen ? '16px' : '20px',
-            color: 'rgba(255, 255, 255, 0.7)',
-            marginBottom: '48px',
-            maxWidth: '600px',
-            margin: '0 auto 48px',
-            lineHeight: '1.6',
-          }}>
-            Unleash Your Talent. Amplify Your Voice. Join NITroz's Auditions.
-          </p>
-
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <button
-              onClick={() => navigate('/register')}
+              Coming Soon
+            </motion.span>
+            <div
               style={{
-                ...styles.button,
-                ...styles.buttonPrimary,
-                boxShadow: '0 0 30px rgba(0, 243, 255, 0.5)',
+                height: "1px",
+                flex: 1,
+                background: "linear-gradient(to right, #38bdf8, transparent)",
+                display: isMobile ? "none" : "block",
               }}
-              onMouseEnter={(e) => {
-                e.target.style.boxShadow = '0 0 50px rgba(0, 243, 255, 0.8)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.boxShadow = '0 0 30px rgba(0, 243, 255, 0.5)';
-              }}
-            >
-              Start Auditioning
-            </button>
+            />
           </motion.div>
+        </motion.div>
 
-          <motion.div
-            animate={{ y: [0, 5, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            style={{ marginTop: '64px' }}
-          >
-            <ChevronDown style={{ width: isSmallScreen ? '24px' : '32px', height: isSmallScreen ? '24px' : '32px', color: '#00f3ff', margin: '0 auto' }} />
-          </motion.div>
+        <p
+          style={{
+            fontSize: isMobile ? "15px" : "20px",
+            opacity: 0.8,
+            maxWidth: "600px",
+            margin: "30px auto",
+            lineHeight: "1.6",
+            fontWeight: "300",
+          }}
+        >
+          Unleash your talent. Amplify your voice. The hunt for the next iconic
+          frequency of Radio NITroz is about to begin.
+        </p>
+
+        <motion.button
+          whileHover={{
+            scale: 1.05,
+            boxShadow: "0 0 25px rgba(248, 56, 194, 0.6)",
+          }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => navigate("/register")}
+          style={{
+            ...styles.button,
+            background: "transparent",
+            border: "3px solid",
+            borderImage: "linear-gradient(135deg, #c238f8, #db25eb) 1",
+            color: "#ffffff",
+            fontSize: isMobile ? "16px" : "18px",
+            padding: isMobile ? "14px 40px" : "16px 52px",
+            fontWeight: "700",
+          }}
+        >
+          REGISTER NOW
+        </motion.button>
+
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+          style={{ marginTop: "40px" }}
+        >
+          <ChevronDown color={theme.colors.primary} size={isMobile ? 28 : 36} />
         </motion.div>
       </section>
 
-      {/* About Section */}
-      <AboutUs isSmallScreen={isSmallScreen} />
+      {/* --- ABOUT SECTION --- */}
+      <AboutUs isSmallScreen={isMobile} />
 
-      {/* CTA Section */}
-      <section style={{ position: 'relative', paddingTop: isSmallScreen ? '60px' : '80px', paddingBottom: isSmallScreen ? '60px' : '80px', paddingLeft: '24px', paddingRight: '24px' }}>
+      {/* --- EVENTS SECTION (STICKY SCROLL) --- */}
+      <section
+        id="events"
+        style={{
+          position: "relative",
+          paddingTop: isMobile ? "60px" : "80px",
+          paddingBottom: isMobile ? "60px" : "80px",
+          paddingLeft: "24px",
+          paddingRight: "24px",
+        }}
+      >
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          style={{
+            fontSize: isMobile ? "32px" : "48px",
+            fontWeight: "800",
+            marginBottom: "48px",
+            textAlign: "center",
+            background: "linear-gradient(135deg, #a855f7, #00f3ff)",
+            backgroundClip: "text",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          Upcoming Events
+        </motion.h2>
+
+        <EventStickyScroll />
+      </section>
+
+      {/* --- DRAGGABLE GALLERY SECTION --- */}
+      <DraggableGallery />
+
+      {/* --- CONTACT SECTION --- */}
+      <section
+        id="contact"
+        style={{
+          position: "relative",
+          paddingTop: isMobile ? "60px" : "80px",
+          paddingBottom: isMobile ? "60px" : "80px",
+          paddingLeft: "24px",
+          paddingRight: "24px",
+        }}
+      >
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
           style={{
-            position: 'relative',
-            padding: isSmallScreen ? '40px 24px' : '64px 32px',
-            borderRadius: '16px',
-            background: 'linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(168, 85, 247, 0.1))',
-            border: '2px solid rgba(0, 243, 255, 0.3)',
-            textAlign: 'center',
-            maxWidth: '896px',
-            margin: '0 auto',
+            position: "relative",
+            padding: isMobile ? "40px 24px" : "64px 32px",
+            borderRadius: "16px",
+            background:
+              "linear-gradient(135deg, rgba(0, 243, 255, 0.05), rgba(168, 85, 247, 0.05))",
+            border: "2px solid rgba(0, 243, 255, 0.3)",
+            textAlign: "center",
+            maxWidth: "1000px",
+            margin: "0 auto",
           }}
         >
-          <h2 style={{
-            fontSize: isSmallScreen ? '32px' : '48px',
-            fontWeight: '800',
-            marginBottom: '24px',
-            background: 'linear-gradient(135deg, #00f3ff, #ff006e)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}>
-            Ready to Audition?
-          </h2>
-          <p style={{
-            fontSize: isSmallScreen ? '16px' : '18px',
-            color: 'rgba(255, 255, 255, 0.7)',
-            marginBottom: '32px',
-          }}>
-            Don't miss this opportunity. Register now and showcase your talent to Radio NITroz.
-          </p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigate('/register')}
+          <h2
             style={{
-              ...styles.button,
-              ...styles.buttonPrimary,
-              boxShadow: '0 0 30px rgba(0, 243, 255, 0.5)',
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.boxShadow = '0 0 50px rgba(0, 243, 255, 0.8)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.boxShadow = '0 0 30px rgba(0, 243, 255, 0.5)';
+              fontSize: isMobile ? "32px" : "48px",
+              fontWeight: "800",
+              marginBottom: "48px",
+              background: "linear-gradient(135deg, #00f3ff, #ff006e)",
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
             }}
           >
-            Register for Auditions
-          </motion.button>
+            Get In Touch
+          </h2>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+              gap: "24px",
+              textAlign: "center",
+            }}
+          >
+            {/* Location Card */}
+            <motion.div
+              style={styles.contactCard}
+              whileHover={{ y: -5, background: "rgba(255, 255, 255, 0.08)" }}
+            >
+              <div
+                style={{
+                  padding: "12px",
+                  background: "rgba(0, 243, 255, 0.1)",
+                  borderRadius: "50%",
+                }}
+              >
+                <MapPin size={24} color="#00f3ff" />
+              </div>
+              <div>
+                <h3
+                  style={{
+                    color: "#fff",
+                    fontSize: "18px",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Location
+                </h3>
+                <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px" }}>
+                  SAC Building, NIT Durgapur
+                  <br />
+                  West Bengal, India
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Email Card */}
+            <motion.div
+              style={styles.contactCard}
+              whileHover={{ y: -5, background: "rgba(255, 255, 255, 0.08)" }}
+            >
+              <div
+                style={{
+                  padding: "12px",
+                  background: "rgba(168, 85, 247, 0.1)",
+                  borderRadius: "50%",
+                }}
+              >
+                <Mail size={24} color="#a855f7" />
+              </div>
+              <div>
+                <h3
+                  style={{
+                    color: "#fff",
+                    fontSize: "18px",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Email
+                </h3>
+                <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px" }}>
+                  contact@radionitroz.com
+                  <br />
+                  queries@nitroz.com
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Socials Card */}
+            <motion.div
+              style={styles.contactCard}
+              whileHover={{ y: -5, background: "rgba(255, 255, 255, 0.08)" }}
+            >
+              <div
+                style={{
+                  padding: "12px",
+                  background: "rgba(255, 0, 110, 0.1)",
+                  borderRadius: "50%",
+                }}
+              >
+                <Users size={24} color="#ff006e" />
+              </div>
+              <div>
+                <h3
+                  style={{
+                    color: "#fff",
+                    fontSize: "18px",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Follow Us
+                </h3>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "16px",
+                    justifyContent: "center",
+                    marginTop: "4px",
+                  }}
+                >
+                  <motion.a
+                    href="#"
+                    whileHover={{ scale: 1.2, color: "#00f3ff" }}
+                    style={{ color: "rgba(255,255,255,0.7)" }}
+                  >
+                    <Instagram size={20} />
+                  </motion.a>
+                  <motion.a
+                    href="#"
+                    whileHover={{ scale: 1.2, color: "#0077b5" }}
+                    style={{ color: "rgba(255,255,255,0.7)" }}
+                  >
+                    <Linkedin size={20} />
+                  </motion.a>
+                  {/* FACEBOOK ADDED HERE */}
+                  <motion.a
+                    href="#"
+                    whileHover={{ scale: 1.2, color: "#1877F2" }}
+                    style={{ color: "rgba(255,255,255,0.7)" }}
+                  >
+                    <Facebook size={20} />
+                  </motion.a>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </motion.div>
       </section>
 
-      {/* Footer */}
-      <footer style={{
-        borderTop: '1px solid rgba(0, 243, 255, 0.1)',
-        paddingTop: isSmallScreen ? '32px' : '48px',
-        paddingBottom: isSmallScreen ? '32px' : '48px',
-        paddingLeft: '24px',
-        paddingRight: '24px',
-        textAlign: 'center',
-        color: 'rgba(255, 255, 255, 0.6)',
-      }}>
-        <div style={{ maxWidth: '896px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: isSmallScreen ? '16px' : '32px', marginBottom: '24px', flexWrap: 'wrap' }}>
-            <a href="#about" style={{ color: '#00f3ff', textDecoration: 'none', transition: 'color 0.3s', fontSize: isSmallScreen ? '14px' : '16px' }} onMouseEnter={(e) => e.target.style.color = '#ff006e'} onMouseLeave={(e) => e.target.style.color = '#00f3ff'}>About</a>
-            <a href="#auditions" style={{ color: '#00f3ff', textDecoration: 'none', transition: 'color 0.3s', fontSize: isSmallScreen ? '14px' : '16px' }} onMouseEnter={(e) => e.target.style.color = '#ff006e'} onMouseLeave={(e) => e.target.style.color = '#00f3ff'}>Auditions</a>
-            <a href="#contact" style={{ color: '#00f3ff', textDecoration: 'none', transition: 'color 0.3s', fontSize: isSmallScreen ? '14px' : '16px' }} onMouseEnter={(e) => e.target.style.color = '#ff006e'} onMouseLeave={(e) => e.target.style.color = '#00f3ff'}>Contact</a>
+      {/* --- FOOTER --- */}
+      <footer
+        style={{
+          borderTop: "1px solid rgba(0, 243, 255, 0.1)",
+          paddingTop: isMobile ? "32px" : "48px",
+          paddingBottom: isMobile ? "32px" : "48px",
+          paddingLeft: "24px",
+          paddingRight: "24px",
+          textAlign: "center",
+          color: "rgba(255, 255, 255, 0.6)",
+        }}
+      >
+        <div style={{ maxWidth: "896px", margin: "0 auto" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: isMobile ? "24px" : "48px",
+              marginBottom: "32px",
+              flexWrap: "wrap",
+            }}
+          >
+            {/* President */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              <h4
+                style={{
+                  color: "#ff006e",
+                  margin: 0,
+                  fontSize: "12px",
+                  textTransform: "uppercase",
+                  letterSpacing: "1px",
+                }}
+              >
+                President
+              </h4>
+              <span
+                style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}
+              >
+                Name Here
+              </span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  color: "rgba(255,255,255,0.7)",
+                  fontSize: "14px",
+                }}
+              >
+                <Phone size={14} color="#00f3ff" />
+                <span>+91 98765 43210</span>
+              </div>
+            </div>
+
+            {/* Divider 1 */}
+            {!isMobile && (
+              <div
+                style={{
+                  width: "1px",
+                  height: "50px",
+                  background: "rgba(255,255,255,0.1)",
+                }}
+              />
+            )}
+
+            {/* Vice President */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              <h4
+                style={{
+                  color: "#a855f7",
+                  margin: 0,
+                  fontSize: "12px",
+                  textTransform: "uppercase",
+                  letterSpacing: "1px",
+                }}
+              >
+                Vice President
+              </h4>
+              <span
+                style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}
+              >
+                Name Here
+              </span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  color: "rgba(255,255,255,0.7)",
+                  fontSize: "14px",
+                }}
+              >
+                <Phone size={14} color="#00f3ff" />
+                <span>+91 98765 43210</span>
+              </div>
+            </div>
+
+            {/* Divider 2 */}
+            {!isMobile && (
+              <div
+                style={{
+                  width: "1px",
+                  height: "50px",
+                  background: "rgba(255,255,255,0.1)",
+                }}
+              />
+            )}
+
+            {/* Gen Sec (ADDED) */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              <h4
+                style={{
+                  color: "#00f3ff",
+                  margin: 0,
+                  fontSize: "12px",
+                  textTransform: "uppercase",
+                  letterSpacing: "1px",
+                }}
+              >
+                General Secretary
+              </h4>
+              <span
+                style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}
+              >
+                Name Here
+              </span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  color: "rgba(255,255,255,0.7)",
+                  fontSize: "14px",
+                }}
+              >
+                <Phone size={14} color="#00f3ff" />
+                <span>+91 98765 43210</span>
+              </div>
+            </div>
           </div>
-          <p style={{ fontSize: isSmallScreen ? '12px' : '14px' }}>© 2024 Radio NITroz. All rights reserved.</p>
+
+          <p style={{ fontSize: isMobile ? "12px" : "14px" }}>
+            © 2024 Radio NITroz. All rights reserved.
+          </p>
         </div>
       </footer>
-      </div>
     </div>
   );
 }
