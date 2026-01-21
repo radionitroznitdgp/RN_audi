@@ -15,7 +15,6 @@ import { useState, useEffect } from "react";
 // --- COMPONENTS ---
 import AboutUs from "./AboutUs";
 import EventInfiniteCards from "./components/EventInfinite";
-
 import DraggableGallery from "./components/DraggableGallery";
 
 // --- THEME & STYLES ---
