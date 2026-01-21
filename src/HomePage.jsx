@@ -413,9 +413,7 @@ export default function HomePage() {
                   Email
                 </h3>
                 <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px" }}>
-                  contact@radionitroz.com
-                  <br />
-                  queries@nitroz.com
+                  radionitroz.nitdgp@gmail.com
                 </p>
               </div>
             </motion.div>
