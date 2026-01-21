@@ -1,6 +1,6 @@
 import React from "react";
 import InfiniteMovingCards from "./ui/InfiniteMovingCards";
-
+import { motion } from "framer-motion";
 const eventContent = [
   {
     name: "Bollywood Day",
@@ -39,14 +39,88 @@ const eventContent = [
   },
 ];
 
-export default function EventInfinite() {
+
+
+export default function InfiniteMovingCards({
+  items,
+  direction = "left",
+  speed = "slow",
+}) {
+  const animationDuration =
+    speed === "fast" ? 15 : speed === "normal" ? 25 : 35;
+
   return (
-    <div className="h-auto w-full flex items-center justify-center py-6 overflow-hidden">
-      <InfiniteMovingCards
-        items={eventContent}
-        direction="left"
-        speed="slow"
-      />
+    <div
+      style={{
+        overflow: "hidden",
+        width: "100%",
+        position: "relative",
+      }}
+    >
+      <motion.div
+        style={{
+          display: "flex",
+          gap: "32px",
+          width: "max-content",
+        }}
+        animate={{
+          x: direction === "left" ? ["0%", "-50%"] : ["-50%", "0%"],
+        }}
+        transition={{
+          duration: animationDuration,
+          repeat: Infinity,
+          ease: "linear",
+        }}
+      >
+        {[...items, ...items].map((item, index) => (
+          <motion.div
+            key={index}
+            whileHover={{
+              scale: 1.05,
+              boxShadow: "0 0 30px rgba(168, 85, 247, 0.35)",
+            }}
+            style={{
+              width: "320px",
+              minHeight: "230px",
+              padding: "24px",
+              borderRadius: "16px",
+              background:
+                "linear-gradient(135deg, rgba(168,85,247,0.12), rgba(0,243,255,0.08))",
+              border: "1px solid rgba(255,255,255,0.12)",
+              backdropFilter: "blur(12px)",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              cursor: "pointer",
+            }}
+          >
+            {/* Event Title */}
+            <h3
+              style={{
+                fontSize: "22px",
+                fontWeight: "800",
+                marginBottom: "12px",
+                background: "linear-gradient(90deg, #a855f7, #00f3ff)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              {item.name}
+            </h3>
+
+            {/* Event Description */}
+            <p
+              style={{
+                fontSize: "14px",
+                lineHeight: "1.6",
+                color: "rgba(255,255,255,0.75)",
+              }}
+            >
+              {item.quote}
+            </p>
+          </motion.div>
+        ))}
+      </motion.div>
     </div>
   );
 }
