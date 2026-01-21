@@ -14,7 +14,8 @@ import { useState, useEffect } from "react";
 
 // --- COMPONENTS ---
 import AboutUs from "./AboutUs";
-import EventStickyScroll from "./components/EventStickyScroll";
+import EventInfiniteCards from "./components/EventInfinite";
+
 import DraggableGallery from "./components/DraggableGallery";
 
 // --- THEME & STYLES ---
@@ -269,37 +270,39 @@ export default function HomePage() {
       <AboutUs isSmallScreen={isMobile} />
 
       {/* --- EVENTS SECTION (STICKY SCROLL) --- */}
-      <section
-        id="events"
-        style={{
-          position: "relative",
-          paddingTop: isMobile ? "60px" : "80px",
-          paddingBottom: isMobile ? "60px" : "80px",
-          paddingLeft: "24px",
-          paddingRight: "24px",
-        }}
-      >
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          style={{
-            fontSize: isMobile ? "32px" : "48px",
-            fontWeight: "800",
-            marginBottom: "48px",
-            textAlign: "center",
-            background: "linear-gradient(135deg, #a855f7, #00f3ff)",
-            backgroundClip: "text",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}
-        >
-          Upcoming Events
-        </motion.h2>
+      {/* --- EVENTS SECTION (INFINITE CARDS) --- */}
+<section
+  id="events"
+  style={{
+    position: "relative",
+    paddingTop: isMobile ? "60px" : "80px",
+    paddingBottom: isMobile ? "60px" : "80px",
+    paddingLeft: "24px",
+    paddingRight: "24px",
+  }}
+>
+  <motion.h2
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.8 }}
+    viewport={{ once: true }}
+    style={{
+      fontSize: isMobile ? "32px" : "48px",
+      fontWeight: "800",
+      marginBottom: "48px",
+      textAlign: "center",
+      background: "linear-gradient(135deg, #a855f7, #00f3ff)",
+      backgroundClip: "text",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+    }}
+  >
+    Past Events
+  </motion.h2>
 
-        <EventStickyScroll />
-      </section>
+  <EventInfiniteCards />
+</section>
+
 
       {/* --- DRAGGABLE GALLERY SECTION --- */}
       <DraggableGallery />
@@ -451,14 +454,14 @@ export default function HomePage() {
                   }}
                 >
                   <motion.a
-                    href="#"
+                    href="https://www.instagram.com/radionitroz.nitdgp"
                     whileHover={{ scale: 1.2, color: "#00f3ff" }}
                     style={{ color: "rgba(255,255,255,0.7)" }}
                   >
                     <Instagram size={20} />
                   </motion.a>
                   <motion.a
-                    href="#"
+                    href="https://www.linkedin.com/company/radio-nitroz-nitdgp/"
                     whileHover={{ scale: 1.2, color: "#0077b5" }}
                     style={{ color: "rgba(255,255,255,0.7)" }}
                   >
@@ -466,7 +469,7 @@ export default function HomePage() {
                   </motion.a>
                   {/* FACEBOOK ADDED HERE */}
                   <motion.a
-                    href="#"
+                    href="https://www.facebook.com/radionitroz.nitdgp"
                     whileHover={{ scale: 1.2, color: "#1877F2" }}
                     style={{ color: "rgba(255,255,255,0.7)" }}
                   >
@@ -524,7 +527,7 @@ export default function HomePage() {
               <span
                 style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}
               >
-                Name Here
+                D Sai Sahil
               </span>
               <div
                 style={{
@@ -536,7 +539,7 @@ export default function HomePage() {
                 }}
               >
                 <Phone size={14} color="#00f3ff" />
-                <span>+91 98765 43210</span>
+                <span>+91 83280 78950</span>
               </div>
             </div>
 
@@ -574,7 +577,7 @@ export default function HomePage() {
               <span
                 style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}
               >
-                Name Here
+                Mohammed Asif
               </span>
               <div
                 style={{
@@ -586,7 +589,7 @@ export default function HomePage() {
                 }}
               >
                 <Phone size={14} color="#00f3ff" />
-                <span>+91 98765 43210</span>
+                <span>+91 89672 90251</span>
               </div>
             </div>
 
@@ -624,7 +627,7 @@ export default function HomePage() {
               <span
                 style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}
               >
-                Name Here
+                SK Raj Ali
               </span>
               <div
                 style={{
@@ -636,7 +639,7 @@ export default function HomePage() {
                 }}
               >
                 <Phone size={14} color="#00f3ff" />
-                <span>+91 98765 43210</span>
+                <span>+91 96356 37725</span>
               </div>
             </div>
           </div>
