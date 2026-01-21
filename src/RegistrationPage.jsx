@@ -222,10 +222,10 @@ export default function RegistrationPage() {
             )}
 
             {/* STEP 2 */}
-            {step === 1 && (
+        {step === 1 && (
               <>
-                <h2 style={styles.title}>Domain Preferences</h2>
-                <p style={styles.helper}>1 = Highest Preference</p>
+                <h2 style={styles.title}>Domain Preference Order</h2>
+                <p style={styles.helper}>Each domain must have a unique rank</p>
 
                 {domains.map((domain) => (
                   <div key={domain} style={styles.domainRow}>
