@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
-/* ---------- CONSTANTS ---------- */
+/* ------------------ CONSTANTS ------------------ */
 
 const domains = [
   "Event Management",
@@ -20,16 +20,10 @@ const steps = [
   "About You",
 ];
 
-/* ---------- VALIDATORS ---------- */
-
-const isValidEmail = (email) =>
-  /^[a-zA-Z0-9._%+-]+@(gmail\.com|nitdgp\.ac\.in)$/.test(email);
-
-/* ---------- MAIN COMPONENT ---------- */
+/* ------------------ MAIN COMPONENT ------------------ */
 
 export default function RegistrationPage() {
   const navigate = useNavigate();
-
   const SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycbxVd-FoKlmKo35wGX_iDkuhxgUT6KMi8u-8-WogqtyD7zJ3VqSpZnaoOTyzxuFWuk98/exec";
 
@@ -56,7 +50,7 @@ export default function RegistrationPage() {
     teamPlayerDesc: "",
   });
 
-  /* ---------- HANDLERS ---------- */
+  /* ------------------ HANDLERS ------------------ */
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -65,40 +59,33 @@ export default function RegistrationPage() {
     const used = Object.values(formData.domainPreferences);
     if (used.includes(value)) return;
 
-    setFormData((prev) => ({
-      ...prev,
-      domainPreferences: {
-        ...prev.domainPreferences,
-        [domain]: value,
-      },
+    setFormData((p) => ({
+      ...p,
+      domainPreferences: { ...p.domainPreferences, [domain]: value },
     }));
   };
 
   const setSkill = (skill, value) =>
-    setFormData((prev) => ({
-      ...prev,
-      skills: { ...prev.skills, [skill]: value },
+    setFormData((p) => ({
+      ...p,
+      skills: { ...p.skills, [skill]: value },
     }));
 
-  /* ---------- STEP VALIDATION ---------- */
+  /* ------------------ STEP VALIDATION ------------------ */
 
   const isStepValid = () => {
-    const {
-      name,
-      rollNumber,
-      regNumber,
-      year,
-      gender,
-      department,
-      email,
-      phone,
-      domainPreferences,
-      skills,
-      whyJoin,
-      teamPlayerDesc,
-    } = formData;
-
     if (step === 0) {
+      const {
+        name,
+        rollNumber,
+        regNumber,
+        year,
+        gender,
+        department,
+        email,
+        phone,
+      } = formData;
+
       return (
         name &&
         rollNumber &&
@@ -107,30 +94,30 @@ export default function RegistrationPage() {
         gender &&
         department &&
         email &&
-        isValidEmail(email) &&
         phone
       );
     }
 
     if (step === 1) {
+      const prefs = Object.values(formData.domainPreferences);
       return (
-        Object.keys(domainPreferences).length === domains.length &&
-        new Set(Object.values(domainPreferences)).size === domains.length
+        prefs.length === domains.length &&
+        new Set(prefs).size === domains.length
       );
     }
 
     if (step === 2) {
-      return Object.values(skills).every((v) => v !== "");
+      return Object.values(formData.skills).every((v) => v);
     }
 
     if (step === 3) {
-      return whyJoin.trim().length > 20 && teamPlayerDesc.trim().length > 20;
+      return formData.whyJoin && formData.teamPlayerDesc;
     }
 
     return false;
   };
 
-  /* ---------- SUBMIT ---------- */
+  /* ------------------ SUBMIT ------------------ */
 
   const submitForm = async () => {
     setStatus("submitting");
@@ -146,19 +133,17 @@ export default function RegistrationPage() {
       if (res.ok) {
         setStatus("success");
         setTimeout(() => navigate("/"), 2000);
-      } else {
-        setStatus("error");
-      }
+      } else setStatus("error");
     } catch {
       setStatus("error");
     }
   };
 
-  /* ---------- UI ---------- */
+  /* ------------------ UI ------------------ */
 
   return (
     <div style={styles.page}>
-      {/* PROGRESS */}
+      {/* Progress */}
       <div style={styles.progress}>
         {steps.map((s, i) => (
           <span
@@ -186,7 +171,6 @@ export default function RegistrationPage() {
             {step === 0 && (
               <>
                 <h2 style={styles.title}>Personal Details</h2>
-
                 <Input name="name" placeholder="Full Name" onChange={handleChange} />
                 <Input name="rollNumber" placeholder="Roll Number" onChange={handleChange} />
                 <Input name="regNumber" placeholder="Registration Number" onChange={handleChange} />
@@ -205,27 +189,16 @@ export default function RegistrationPage() {
                 </select>
 
                 <Input name="department" placeholder="Department" onChange={handleChange} />
-
-                <Input
-                  name="email"
-                  placeholder="Email (gmail.com / nitdgp.ac.in)"
-                  onChange={handleChange}
-                />
-                {formData.email && !isValidEmail(formData.email) && (
-                  <p style={styles.error}>
-                    Enter a valid Gmail or NIT Durgapur email
-                  </p>
-                )}
-
+                <Input name="email" placeholder="Email" onChange={handleChange} />
                 <Input name="phone" placeholder="Phone Number" onChange={handleChange} />
               </>
             )}
 
             {/* STEP 2 */}
-        {step === 1 && (
+            {step === 1 && (
               <>
                 <h2 style={styles.title}>Domain Preference Order</h2>
-                <p style={styles.helper}>Each domain must have a unique rank</p>
+                <p style={styles.helper}>Select a unique preference number (1 = highest)</p>
 
                 {domains.map((domain) => (
                   <div key={domain} style={styles.domainRow}>
@@ -276,7 +249,7 @@ export default function RegistrationPage() {
 
                 <textarea
                   name="teamPlayerDesc"
-                  placeholder="How good are you as a team player? Explain."
+                  placeholder="How good are you as a team player?"
                   onChange={handleChange}
                   style={{ ...styles.input, height: 120 }}
                 />
@@ -292,22 +265,28 @@ export default function RegistrationPage() {
               Back
             </button>
           )}
+
           {step < steps.length - 1 ? (
             <button
               onClick={() => setStep(step + 1)}
+              disabled={!isStepValid()}
               style={{
                 ...styles.primary,
                 opacity: isStepValid() ? 1 : 0.4,
+                cursor: isStepValid() ? "pointer" : "not-allowed",
               }}
-              disabled={!isStepValid()}
             >
               Next
             </button>
           ) : (
             <button
               onClick={submitForm}
-              style={styles.primary}
-              disabled={!isStepValid()}
+              disabled={!isStepValid() || status === "submitting"}
+              style={{
+                ...styles.primary,
+                opacity: isStepValid() ? 1 : 0.4,
+                cursor: isStepValid() ? "pointer" : "not-allowed",
+              }}
             >
               {status === "submitting" ? "Submitting..." : "Submit"}
             </button>
@@ -329,7 +308,7 @@ export default function RegistrationPage() {
   );
 }
 
-/* ---------- REUSABLE COMPONENTS ---------- */
+/* ------------------ SMALL COMPONENTS ------------------ */
 
 const Input = (props) => <input {...props} style={styles.input} />;
 
@@ -353,7 +332,7 @@ const RatingRow = ({ label, value, onSelect }) => (
   </div>
 );
 
-/* ---------- STYLES ---------- */
+/* ------------------ STYLES ------------------ */
 
 const styles = {
   page: {
@@ -365,12 +344,7 @@ const styles = {
     padding: "40px 16px",
     color: "#fff",
   },
-  progress: {
-    display: "flex",
-    gap: 16,
-    marginBottom: 24,
-    flexWrap: "wrap",
-  },
+  progress: { display: "flex", gap: 16, marginBottom: 24, flexWrap: "wrap" },
   progressStep: { fontSize: 12, opacity: 0.6 },
   progressActive: { color: "#00f3ff", fontWeight: 700, opacity: 1 },
   card: {
@@ -383,7 +357,6 @@ const styles = {
   },
   title: { fontSize: 28, marginBottom: 16 },
   helper: { color: "#9ca3af", marginBottom: 16 },
-  error: { color: "#ff006e", fontSize: 12, marginBottom: 10 },
   input: {
     width: "100%",
     padding: 14,
@@ -394,7 +367,7 @@ const styles = {
     marginBottom: 14,
   },
   smallSelect: {
-    width: "140px",
+    width: 140,
     padding: 10,
     borderRadius: 10,
     backgroundColor: "#0f0f1a",
@@ -408,11 +381,7 @@ const styles = {
     alignItems: "center",
     marginBottom: 14,
   },
-  nav: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginTop: 24,
-  },
+  nav: { display: "flex", justifyContent: "space-between", marginTop: 24 },
   primary: {
     padding: "12px 28px",
     borderRadius: 999,
@@ -441,4 +410,3 @@ const styles = {
     fontWeight: 700,
   },
 };
-
