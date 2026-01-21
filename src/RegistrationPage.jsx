@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
+/* ---------- CONSTANTS ---------- */
+
 const domains = [
   "Event Management",
   "Content Writing",
@@ -18,10 +20,19 @@ const steps = [
   "About You",
 ];
 
+/* ---------- VALIDATORS ---------- */
+
+const isValidEmail = (email) =>
+  /^[a-zA-Z0-9._%+-]+@(gmail\.com|nitdgp\.ac\.in)$/.test(email);
+
+/* ---------- MAIN COMPONENT ---------- */
+
 export default function RegistrationPage() {
   const navigate = useNavigate();
+
   const SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycbxVd-FoKlmKo35wGX_iDkuhxgUT6KMi8u-8-WogqtyD7zJ3VqSpZnaoOTyzxuFWuk98/exec";
+
   const [step, setStep] = useState(0);
   const [status, setStatus] = useState("");
 
@@ -45,6 +56,8 @@ export default function RegistrationPage() {
     teamPlayerDesc: "",
   });
 
+  /* ---------- HANDLERS ---------- */
+
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -52,17 +65,72 @@ export default function RegistrationPage() {
     const used = Object.values(formData.domainPreferences);
     if (used.includes(value)) return;
 
-    setFormData((p) => ({
-      ...p,
-      domainPreferences: { ...p.domainPreferences, [domain]: value },
+    setFormData((prev) => ({
+      ...prev,
+      domainPreferences: {
+        ...prev.domainPreferences,
+        [domain]: value,
+      },
     }));
   };
 
   const setSkill = (skill, value) =>
-    setFormData((p) => ({
-      ...p,
-      skills: { ...p.skills, [skill]: value },
+    setFormData((prev) => ({
+      ...prev,
+      skills: { ...prev.skills, [skill]: value },
     }));
+
+  /* ---------- STEP VALIDATION ---------- */
+
+  const isStepValid = () => {
+    const {
+      name,
+      rollNumber,
+      regNumber,
+      year,
+      gender,
+      department,
+      email,
+      phone,
+      domainPreferences,
+      skills,
+      whyJoin,
+      teamPlayerDesc,
+    } = formData;
+
+    if (step === 0) {
+      return (
+        name &&
+        rollNumber &&
+        regNumber &&
+        year &&
+        gender &&
+        department &&
+        email &&
+        isValidEmail(email) &&
+        phone
+      );
+    }
+
+    if (step === 1) {
+      return (
+        Object.keys(domainPreferences).length === domains.length &&
+        new Set(Object.values(domainPreferences)).size === domains.length
+      );
+    }
+
+    if (step === 2) {
+      return Object.values(skills).every((v) => v !== "");
+    }
+
+    if (step === 3) {
+      return whyJoin.trim().length > 20 && teamPlayerDesc.trim().length > 20;
+    }
+
+    return false;
+  };
+
+  /* ---------- SUBMIT ---------- */
 
   const submitForm = async () => {
     setStatus("submitting");
@@ -78,14 +146,19 @@ export default function RegistrationPage() {
       if (res.ok) {
         setStatus("success");
         setTimeout(() => navigate("/"), 2000);
-      } else setStatus("error");
+      } else {
+        setStatus("error");
+      }
     } catch {
       setStatus("error");
     }
   };
 
+  /* ---------- UI ---------- */
+
   return (
     <div style={styles.page}>
+      {/* PROGRESS */}
       <div style={styles.progress}>
         {steps.map((s, i) => (
           <span
@@ -114,68 +187,45 @@ export default function RegistrationPage() {
               <>
                 <h2 style={styles.title}>Personal Details</h2>
 
-                <Input
-                  name="name"
-                  placeholder="Full Name"
-                  onChange={handleChange}
-                />
-                <Input
-                  name="rollNumber"
-                  placeholder="Roll Number"
-                  onChange={handleChange}
-                />
-                <Input
-                  name="regNumber"
-                  placeholder="Registration Number"
-                  onChange={handleChange}
-                />
+                <Input name="name" placeholder="Full Name" onChange={handleChange} />
+                <Input name="rollNumber" placeholder="Roll Number" onChange={handleChange} />
+                <Input name="regNumber" placeholder="Registration Number" onChange={handleChange} />
 
-                <select
-                  name="year"
-                  onChange={handleChange}
-                  style={styles.smallSelect}
-                >
+                <select name="year" onChange={handleChange} style={styles.smallSelect}>
                   <option value="">Select Year</option>
                   <option>First Year</option>
                   <option>Second Year</option>
                 </select>
 
-                <select
-                  name="gender"
-                  onChange={handleChange}
-                  style={styles.smallSelect}
-                >
+                <select name="gender" onChange={handleChange} style={styles.smallSelect}>
                   <option value="">Select Gender</option>
                   <option>Male</option>
                   <option>Female</option>
                   <option>Other</option>
                 </select>
 
-                <Input
-                  name="department"
-                  placeholder="Department"
-                  onChange={handleChange}
-                />
+                <Input name="department" placeholder="Department" onChange={handleChange} />
+
                 <Input
                   name="email"
-                  placeholder="Email"
+                  placeholder="Email (gmail.com / nitdgp.ac.in)"
                   onChange={handleChange}
                 />
-                <Input
-                  name="phone"
-                  placeholder="Phone Number"
-                  onChange={handleChange}
-                />
+                {formData.email && !isValidEmail(formData.email) && (
+                  <p style={styles.error}>
+                    Enter a valid Gmail or NIT Durgapur email
+                  </p>
+                )}
+
+                <Input name="phone" placeholder="Phone Number" onChange={handleChange} />
               </>
             )}
 
             {/* STEP 2 */}
             {step === 1 && (
               <>
-                <h2 style={styles.title}>Domain Preference Order</h2>
-                <p style={styles.helper}>
-                  Select a unique preference number (1 = highest)
-                </p>
+                <h2 style={styles.title}>Domain Preferences</h2>
+                <p style={styles.helper}>1 = Highest Preference</p>
 
                 {domains.map((domain) => (
                   <div key={domain} style={styles.domainRow}>
@@ -201,7 +251,6 @@ export default function RegistrationPage() {
             {step === 2 && (
               <>
                 <h2 style={styles.title}>Rate Your Skills</h2>
-
                 {Object.keys(formData.skills).map((s) => (
                   <RatingRow
                     key={s}
@@ -222,20 +271,21 @@ export default function RegistrationPage() {
                   name="whyJoin"
                   placeholder="Why do you want to join Radio NITroz?"
                   onChange={handleChange}
-                  style={{ ...styles.input, height: "120px" }}
+                  style={{ ...styles.input, height: 120 }}
                 />
 
                 <textarea
                   name="teamPlayerDesc"
-                  placeholder="How good are you as a team player? Describe with an example."
+                  placeholder="How good are you as a team player? Explain."
                   onChange={handleChange}
-                  style={{ ...styles.input, height: "120px" }}
+                  style={{ ...styles.input, height: 120 }}
                 />
               </>
             )}
           </motion.div>
         </AnimatePresence>
 
+        {/* NAV */}
         <div style={styles.nav}>
           {step > 0 && (
             <button onClick={() => setStep(step - 1)} style={styles.secondary}>
@@ -243,11 +293,22 @@ export default function RegistrationPage() {
             </button>
           )}
           {step < steps.length - 1 ? (
-            <button onClick={() => setStep(step + 1)} style={styles.primary}>
+            <button
+              onClick={() => setStep(step + 1)}
+              style={{
+                ...styles.primary,
+                opacity: isStepValid() ? 1 : 0.4,
+              }}
+              disabled={!isStepValid()}
+            >
               Next
             </button>
           ) : (
-            <button onClick={submitForm} style={styles.primary}>
+            <button
+              onClick={submitForm}
+              style={styles.primary}
+              disabled={!isStepValid()}
+            >
               {status === "submitting" ? "Submitting..." : "Submit"}
             </button>
           )}
@@ -268,7 +329,7 @@ export default function RegistrationPage() {
   );
 }
 
-/* ---------- COMPONENTS ---------- */
+/* ---------- REUSABLE COMPONENTS ---------- */
 
 const Input = (props) => <input {...props} style={styles.input} />;
 
@@ -322,6 +383,7 @@ const styles = {
   },
   title: { fontSize: 28, marginBottom: 16 },
   helper: { color: "#9ca3af", marginBottom: 16 },
+  error: { color: "#ff006e", fontSize: 12, marginBottom: 10 },
   input: {
     width: "100%",
     padding: 14,
@@ -379,3 +441,4 @@ const styles = {
     fontWeight: 700,
   },
 };
+
