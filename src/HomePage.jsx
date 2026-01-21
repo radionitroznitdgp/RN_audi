@@ -577,7 +577,7 @@ export default function HomePage() {
               <span
                 style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}
               >
-                Mohammed Asif
+                 SK Raj Ali
               </span>
               <div
                 style={{
@@ -589,7 +589,7 @@ export default function HomePage() {
                 }}
               >
                 <Phone size={14} color="#00f3ff" />
-                <span>+91 89672 90251</span>
+                <span>+91 96356 37725</span>
               </div>
             </div>
 
@@ -627,7 +627,7 @@ export default function HomePage() {
               <span
                 style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}
               >
-                SK Raj Ali
+                Mohammed Asif
               </span>
               <div
                 style={{
@@ -639,14 +639,13 @@ export default function HomePage() {
                 }}
               >
                 <Phone size={14} color="#00f3ff" />
-                <span>+91 96356 37725</span>
+                <span>+91 89672 90251</span>
               </div>
             </div>
           </div>
-
-          <p style={{ fontSize: isMobile ? "12px" : "14px" }}>
-            © 2024 Radio NITroz. All rights reserved.
-          </p>
+<p style={{ fontSize: isMobile ? "12px" : "14px" }}>
+  © {new Date().getFullYear()} Radio NITroz • Developed by the Web Team
+</p>
         </div>
       </footer>
     </div>
