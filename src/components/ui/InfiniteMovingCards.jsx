@@ -5,51 +5,64 @@ export default function InfiniteMovingCards({
   direction = "left",
   speed = "slow",
 }) {
-  const durationMap = {
-    slow: 40,
-    normal: 25,
-    fast: 15,
-  };
+  const duration = speed === "fast" ? 15 : speed === "normal" ? 25 : 35;
 
   return (
-    // Ensure this container doesn't have a fixed height (like h-[40rem]) in the parent component
-    <div className="relative w-full overflow-hidden">
+    <div style={{ overflow: "hidden", width: "100%" }}>
       <motion.div
-        className="flex gap-3 w-max" // Reduced gap between cards
+        style={{ display: "flex", gap: "32px", width: "max-content" }}
         animate={{
           x: direction === "left" ? ["0%", "-50%"] : ["-50%", "0%"],
         }}
         transition={{
+          duration,
           repeat: Infinity,
           ease: "linear",
-          duration: durationMap[speed],
         }}
       >
-        {/* Repeating 4 times to ensure smooth scrolling without gaps */}
-        {[...items, ...items, ...items, ...items].map((item, idx) => (
-          <div
-            key={idx}
-            className="w-[200px] md:w-[260px] flex-shrink-0 flex flex-col items-center text-center justify-center
-                       rounded-xl p-3 
-                       border border-white/10 backdrop-blur-sm"
+        {[...items, ...items].map((item, index) => (
+          <motion.div
+            key={index}
+            whileHover={{
+              scale: 1.05,
+              boxShadow: "0 0 30px rgba(168,85,247,0.35)",
+            }}
             style={{
-              // Explicit background color as requested
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              width: "320px",
+              minHeight: "230px",
+              padding: "24px",
+              borderRadius: "16px",
+              background:
+                "linear-gradient(135deg, rgba(168,85,247,0.12), rgba(0,243,255,0.08))",
+              border: "1px solid rgba(255,255,255,0.12)",
+              backdropFilter: "blur(12px)",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
             }}
           >
-            {/* NAME: Top and Center, Font size adjusted */}
-            <h4 className="text-white font-bold text-sm mb-1">{item.name}</h4>
+            <h3
+              style={{
+                fontSize: "22px",
+                fontWeight: "800",
+                background: "linear-gradient(90deg,#a855f7,#00f3ff)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              {item.name}
+            </h3>
 
-            {/* Title */}
-            <span className="text-[10px] text-pink-400 font-medium mb-2 uppercase tracking-wider">
-              {item.title}
-            </span>
-
-            {/* QUOTE: Text size reduced for compact look */}
-            <p className="text-xs text-white/80 leading-relaxed">
-              "{item.quote}"
+            <p
+              style={{
+                fontSize: "14px",
+                lineHeight: "1.6",
+                color: "rgba(255,255,255,0.75)",
+              }}
+            >
+              {item.quote}
             </p>
-          </div>
+          </motion.div>
         ))}
       </motion.div>
     </div>
