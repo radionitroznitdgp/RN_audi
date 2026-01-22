@@ -20,6 +20,35 @@ const steps = [
   "About You",
 ];
 
+const badWords = [
+  "fuck",
+  "shit",
+  "bitch",
+  "sex",
+  "porn",
+  "mc",
+  "bc",
+  "madarchod",
+  "behenchod",
+];
+
+/* ------------------ HELPERS ------------------ */
+
+const containsBadWords = (text = "") =>
+  badWords.some((w) => text.toLowerCase().includes(w));
+
+const isSpamText = (text = "") => {
+  if (!/[a-zA-Z]/.test(text)) return true;
+  if (/([a-zA-Z])\1{4,}/.test(text)) return true;
+  if (text.trim().length < 10) return true;
+  return false;
+};
+
+const validEmail = (email) =>
+  /^[a-zA-Z0-9._%+-]+@(gmail\.com|nitdgp\.ac\.in)$/.test(email);
+
+const validPhone = (phone) => /^[0-9]{10}$/.test(phone);
+
 /* ------------------ MAIN COMPONENT ------------------ */
 
 export default function RegistrationPage() {
@@ -71,7 +100,7 @@ export default function RegistrationPage() {
       skills: { ...p.skills, [skill]: value },
     }));
 
-  /* ------------------ STEP VALIDATION ------------------ */
+  /* ------------------ VALIDATION ------------------ */
 
   const isStepValid = () => {
     if (step === 0) {
@@ -93,8 +122,8 @@ export default function RegistrationPage() {
         year &&
         gender &&
         department &&
-        email &&
-        phone
+        validEmail(email) &&
+        validPhone(phone)
       );
     }
 
@@ -111,7 +140,22 @@ export default function RegistrationPage() {
     }
 
     if (step === 3) {
-      return formData.whyJoin && formData.teamPlayerDesc;
+      if (
+        containsBadWords(formData.whyJoin) ||
+        containsBadWords(formData.teamPlayerDesc)
+      )
+        return false;
+
+      if (
+        isSpamText(formData.whyJoin) ||
+        isSpamText(formData.teamPlayerDesc)
+      )
+        return false;
+
+      return (
+        formData.whyJoin.trim().length >= 10 &&
+        formData.teamPlayerDesc.trim().length >= 10
+      );
     }
 
     return false;
@@ -189,8 +233,8 @@ export default function RegistrationPage() {
                 </select>
 
                 <Input name="department" placeholder="Department" onChange={handleChange} />
-                <Input name="email" placeholder="Email" onChange={handleChange} />
-                <Input name="phone" placeholder="Phone Number" onChange={handleChange} />
+                <Input name="email" placeholder="Email (gmail / nitdgp)" onChange={handleChange} />
+                <Input name="phone" placeholder="10-digit Phone Number" onChange={handleChange} />
               </>
             )}
 
@@ -198,8 +242,6 @@ export default function RegistrationPage() {
             {step === 1 && (
               <>
                 <h2 style={styles.title}>Domain Preference Order</h2>
-                <p style={styles.helper}>Select a unique preference number (1 = highest)</p>
-
                 {domains.map((domain) => (
                   <div key={domain} style={styles.domainRow}>
                     <span>{domain}</span>
@@ -253,6 +295,10 @@ export default function RegistrationPage() {
                   onChange={handleChange}
                   style={{ ...styles.input, height: 120 }}
                 />
+
+                <p style={{ fontSize: 12, opacity: 0.6 }}>
+                  Inappropriate or fake responses will be rejected.
+                </p>
               </>
             )}
           </motion.div>
@@ -273,7 +319,6 @@ export default function RegistrationPage() {
               style={{
                 ...styles.primary,
                 opacity: isStepValid() ? 1 : 0.4,
-                cursor: isStepValid() ? "pointer" : "not-allowed",
               }}
             >
               Next
@@ -285,7 +330,6 @@ export default function RegistrationPage() {
               style={{
                 ...styles.primary,
                 opacity: isStepValid() ? 1 : 0.4,
-                cursor: isStepValid() ? "pointer" : "not-allowed",
               }}
             >
               {status === "submitting" ? "Submitting..." : "Submit"}
@@ -356,7 +400,6 @@ const styles = {
     padding: 32,
   },
   title: { fontSize: 28, marginBottom: 16 },
-  helper: { color: "#9ca3af", marginBottom: 16 },
   input: {
     width: "100%",
     padding: 14,
@@ -367,7 +410,7 @@ const styles = {
     marginBottom: 14,
   },
   smallSelect: {
-    width: 140,
+    width: 160,
     padding: 10,
     borderRadius: 10,
     backgroundColor: "#0f0f1a",
